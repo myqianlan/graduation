@@ -21,14 +21,9 @@ io.sockets.on('connection', function(socket) {
     socket.emit('news', {
         hello: 'world'
     });
-    socket.on("clientMousedown", function(data) {
+    socket.on("myClick", function(data) {
         /* Act on the event */
         console.log(data);
-        socket.broadcast.emit("yesDown", data);
-    });
-    socket.on("clientMouseup", function(data) {
-        /* Act on the event */
-        console.log(data);
-        socket.broadcast.emit("yesUp", data);
+        socket.broadcast.emit("otherClick", data);
     });
 });

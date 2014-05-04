@@ -21,19 +21,17 @@ canvas {
 	<canvas id="canvas">Canvas is not supported in your browser.</canvas>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-var mousedown = false;
   var socket = io.connect('http://localhost');
   socket.on('news', function (data) {
     console.log(data);
   });
-  socket.on('yesDown', function (data) {
-    mousedown = true;
-    console.log(mousedown);
+  socket.on('otherClick', function (data) {
+    	mx = cw*data["mousex"];
+	my = ch*data["mousey"];
+	createFirework(mx,my);
+    	console.log(data["mousex"]);
   });
-  socket.on('yesUp', function (data) {
-    mousedown =false;
-    console.log(mousedown);
-  });
+
 </script>
 
 	<script>
@@ -61,7 +59,7 @@ var canvas = document.getElementById( 'canvas' ),
 		// starting hue
 		hue = 120,
 		// when launching fireworks with a click, too many get launched at once without a limiter, one launch per 5 loop ticks
-		limiterTotal = 5,
+		limiterTotal = 10,
 		limiterTick = 0,
 		// this will time the auto launches of fireworks, one launch per 80 loop ticks
 		timerTotal = 80,
@@ -267,48 +265,32 @@ function loop() {
 	}
 	
 	// launch fireworks automatically to random coordinates, when the mouse isn't down
-	if( timerTick >= timerTotal ) {
-		if( !mousedown ) {
-			// start the firework at the bottom middle of the screen, then set the random target coordinates, the random y coordinates will be set within the range of the top half of the screen
-			// fireworks.push( new Firework( cw / 2, ch, random( 0, cw ), random( 0, ch / 2 ) ) );
-			// timerTick = 0;
-		}
-	} else {
-		timerTick++;
-	}
-	
-	// limit the rate at which fireworks get launched when mouse is down
-	if( limiterTick >= limiterTotal ) {
-		if( mousedown ) {
-			// start the firework at the bottom middle of the screen, then set the current mouse coordinates as the target
-			fireworks.push( new Firework( cw / 2, ch, mx, my ) );
-			limiterTick = 0;
-		}
-	} else {
-		limiterTick++;
-	}
+	// if( timerTick >= timerTotal ) {
+	// 	if( !mousedown ) {
+	// 		// start the firework at the bottom middle of the screen, then set the random target coordinates, the random y coordinates will be set within the range of the top half of the screen
+	// 		// fireworks.push( new Firework( cw / 2, ch, random( 0, cw ), random( 0, ch / 2 ) ) );
+	// 		// timerTick = 0;
+	// 	}
+	// } else {
+	// 	timerTick++;
+	// }
 }
 
 // mouse event bindings
-// update the mouse coordinates on mousemove
-canvas.addEventListener( 'mousemove', function( e ) {
-	mx = e.pageX - canvas.offsetLeft;
-	my = e.pageY - canvas.offsetTop;
-});
 
 // toggle mousedown state and prevent canvas from being selected
-canvas.addEventListener( 'mousedown', function( e ) {
+canvas.addEventListener( 'click', function( e ) {
 	e.preventDefault();
-	mousedown = true;
+	mx = e.pageX - canvas.offsetLeft;
+	my = e.pageY - canvas.offsetTop;
+	createFirework(mx,my);
 	//todo:
-	socket.emit("clientMousedown", {mousedown:"true"});
+	socket.emit("myClick", {mousex:mx/cw,mousey:my/ch});
 });
 
-canvas.addEventListener( 'mouseup', function( e ) {
-	e.preventDefault();
-	mousedown = false;
-	socket.emit("clientMouseup", {mousedown:"false"});
-});
+function createFirework(mx,my){
+	fireworks.push( new Firework( cw / 2, ch, mx, my ) );
+}
 
 // once the window loads, we are ready for some fireworks!
 window.onload = loop;

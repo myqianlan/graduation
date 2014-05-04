@@ -3,6 +3,7 @@ var app = require('http').createServer(handler),
     fs = require('fs')
 
     app.listen(7777);
+var clientNum = 0;
 
 function handler(req, res) {
     fs.readFile(__dirname + '/index.html',
@@ -18,8 +19,14 @@ function handler(req, res) {
 }
 
 io.sockets.on('connection', function(socket) {
+    clientNum++;
     socket.emit('news', {
-        hello: 'world'
+        hello: clientNum
+    });
+    //user leave
+    socket.on('disconnect', function() {
+        clientNum--;
+        // socket.broadcast.emit('system', socket.nickname, users.length, 'logout');
     });
     socket.on("myClick", function(data) {
         /* Act on the event */

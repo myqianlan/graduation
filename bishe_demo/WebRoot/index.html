@@ -7,7 +7,7 @@
 	<style>
 /* basic styles for black background and crosshair cursor */
 body {
-	background: #000;
+	background: #1d001d;
 	margin: 0;
 }
 
@@ -15,15 +15,34 @@ canvas {
 	cursor: crosshair;
 	display: block;
 }
+#num-wrap{
+	position: fixed;
+	top: 0;
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+	color: #FFF;
+	background: #07adfe;
+	font-size: 30px;
+	pointer-events:none;
+	text-align: center;
+}
+#num{
+	color: black;
+	font-weight: bold;
+}
 </style>
 </head>
 <body>
+<div id="num-wrap">Now&nbsp<span id="num">0</span>&nbsp;Client&nbsp;Connected</div>
 	<canvas id="canvas">Canvas is not supported in your browser.</canvas>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+var num = document.getElementById("num");
   var socket = io.connect('http://localhost');
-  socket.on('news', function (data) {
-    console.log(data);
+  socket.on("clientChange", function (data) {
+    console.log("current connect "+data+" client");
+    num.innerHTML=data;
   });
   socket.on('otherClick', function (data) {
     	mx = cw*data["mousex"];
@@ -277,8 +296,6 @@ function loop() {
 }
 
 // mouse event bindings
-
-// toggle mousedown state and prevent canvas from being selected
 canvas.addEventListener( 'click', function( e ) {
 	e.preventDefault();
 	mx = e.pageX - canvas.offsetLeft;

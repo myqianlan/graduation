@@ -45,6 +45,7 @@ var num = document.getElementById("num");
 var socket = io.connect('http://localhost');
 socket.on("connect",  function() {
 	/* action when conneted */
+	
 	alert("you connect to others!")
 });
 socket.on("disconnect",  function() {

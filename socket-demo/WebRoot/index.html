@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="zh-CN">
+<html>
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width" />
-	<title>毕设-交互HTML5+JS烟花特效</title>
+	<title>毕设-新一代无插件交互式web技术研究及应用</title>
 	<style>
 /* basic styles for black background and crosshair cursor */
 body {
-	background: #1d001d;
+	background: #000;
 	margin: 0;
 }
 
@@ -22,10 +22,11 @@ canvas {
 	height: 30px;
 	line-height: 30px;
 	color: #FFF;
-	background: #07adfe;
+	background: rgba(122,135,123,0.67);
 	font-size: 30px;
 	pointer-events:none;
 	text-align: center;
+	/*display: none;*/
 }
 #num{
 	color: black;
@@ -34,12 +35,23 @@ canvas {
 </style>
 </head>
 <body>
+<div id="meet"></div>
+<div id="cut-down"></div>
 <div id="num-wrap">Now&nbsp<span id="num">0</span>&nbsp;Client&nbsp;Connected</div>
 	<canvas id="canvas">Canvas is not supported in your browser.</canvas>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 var num = document.getElementById("num");
-  var socket = io.connect('http://localhost');
+var socket = io.connect('http://localhost');
+socket.on("connect",  function() {
+	/* action when conneted */
+	alert("you connect to others!")
+});
+socket.on("disconnect",  function() {
+	/* action when conneted */
+	alert("you disconnect to others!")
+});
+
   socket.on("clientChange", function (data) {
     console.log("current connect "+data+" client");
     num.innerHTML=data;
@@ -256,7 +268,7 @@ function loop() {
 	requestAnimFrame( loop );
 	
 	// increase the hue to get different colored fireworks over time
-	hue += 0.5;
+	hue += 5.5;
 	
 	// normally, clearRect() would be used to clear the canvas
 	// we want to create a trailing effect though
@@ -282,19 +294,8 @@ function loop() {
 		particles[ i ].draw();
 		particles[ i ].update( i );
 	}
-	
-	// launch fireworks automatically to random coordinates, when the mouse isn't down
-	// if( timerTick >= timerTotal ) {
-	// 	if( !mousedown ) {
-	// 		// start the firework at the bottom middle of the screen, then set the random target coordinates, the random y coordinates will be set within the range of the top half of the screen
-	// 		// fireworks.push( new Firework( cw / 2, ch, random( 0, cw ), random( 0, ch / 2 ) ) );
-	// 		// timerTick = 0;
-	// 	}
-	// } else {
-	// 	timerTick++;
-	// }
-}
 
+}
 // mouse event bindings
 canvas.addEventListener( 'click', function( e ) {
 	e.preventDefault();
@@ -302,7 +303,7 @@ canvas.addEventListener( 'click', function( e ) {
 	my = e.pageY - canvas.offsetTop;
 	createFirework(mx,my);
 	//todo:
-	socket.emit("myClick", {mousex:mx/cw,mousey:my/ch});
+	socket.emit("myClick", {mousex:Math.floor(100*mx/cw)/100,mousey:Math.floor(100*my/ch)/100});
 });
 
 function createFirework(mx,my){

@@ -4,15 +4,15 @@
 //开始服务启动计时器 
 console.time('[WebSvr][Start]');
 //请求模块 
-var libHttp = require('http'); //HTTP协议模块 
-var libUrl = require('url'); //URL解析模块 
-var libFs = require("fs"); //文件系统模块 
-var libPath = require("path"); //路径解析模块 
+var http = require('http'); //HTTP协议模块 
+var url = require('url'); //URL解析模块 
+var fs = require("fs"); //文件系统模块 
+var path = require("path"); //路径解析模块 
 //依据路径获取返回内容类型字符串,用于http返回头 
-var funGetContentType = function(filePath) {
+var getContentType = function(filePath) {
     var contentType = "";
     //使用路径解析模块获取文件扩展名 
-    var ext = libPath.extname(filePath);
+    var ext = path.extname(filePath);
     switch (ext) {
         case ".html":
             contentType = "text/html";
@@ -41,13 +41,13 @@ var funGetContentType = function(filePath) {
     return contentType; //返回内容类型字符串 
 }
 //Web服务器主函数,解析请求,返回Web内容 
-var funWebSvr = function(req, res) {
+var webServicer = function(req, res) {
     var reqUrl = req.url; //获取请求的url 
     //向控制台输出请求的路径 
     console.log(reqUrl);
     //使用url解析模块获取url中的路径名 
-    var pathName = libUrl.parse(reqUrl).pathname;
-    if (libPath.extname(pathName) == "") {
+    var pathName = url.parse(reqUrl).pathname;
+    if (path.extname(pathName) == "") {
         //如果路径没有扩展名 
         pathName += "/"; //指定访问目录 
     }
@@ -56,16 +56,16 @@ var funWebSvr = function(req, res) {
         pathName += "index.html"; //指定为默认网页 
     }
     //使用路径解析模块,组装实际文件路径 
-    var filePath = libPath.join("./WebRoot", pathName);
+    var filePath = path.join("./WebRoot", pathName);
     //判断文件是否存在 
-    libPath.exists(filePath, function(exists) {
+    path.exists(filePath, function(exists) {
         if (exists) { //文件存在 
             //在返回头中写入内容类型 
             res.writeHead(200, {
-                "Content-Type": funGetContentType(filePath)
+                "Content-Type": getContentType(filePath)
             });
             //创建只读流用于返回 
-            var stream = libFs.createReadStream(filePath, {
+            var stream = fs.createReadStream(filePath, {
                 flags: "r",
                 encoding: null
             });
@@ -86,7 +86,7 @@ var funWebSvr = function(req, res) {
     });
 }
 //创建一个http服务器 
-var webSvr = libHttp.createServer(funWebSvr),
+var webSvr = http.createServer(webServicer),
     io = require('socket.io').listen(webSvr);
 //指定服务器错误事件响应 
 webSvr.on("error", function(error) {
@@ -101,6 +101,7 @@ webSvr.listen(3000, function() {
 });
 
 var clientNum = 0;
+var fireworkNum = 0;
 io.sockets.on('connection', function(socket) {
     clientNum++;
     io.sockets.emit("clientChange", clientNum);
@@ -112,7 +113,8 @@ io.sockets.on('connection', function(socket) {
     });
     socket.on("myClick", function(data) {
         /* Act on the event */
-        console.log(data);
+        fireworkNum++;
+        console.log(data + "fireworkNum" + fireworkNum);
         socket.broadcast.emit("otherClick", data);
     });
 });

@@ -104,7 +104,11 @@ var clientNum = 0;
 var fireworkNum = 0;
 io.sockets.on('connection', function(socket) {
     clientNum++;
-    io.sockets.emit("clientChange", clientNum);
+    console.log(clientNum);
+    io.sockets.emit("clientChange", {
+        clientNum: clientNum,
+        fireworkNum: fireworkNum
+    });
     //user leave
     socket.on('disconnect', function() {
         clientNum--;
@@ -114,6 +118,10 @@ io.sockets.on('connection', function(socket) {
     socket.on("myClick", function(data) {
         fireworkNum++;
         console.log(data + "fireworkNum" + fireworkNum);
-        socket.broadcast.emit("otherClick", data);
+        io.sockets.emit("otherClick", {
+            mousex: data["mousex"],
+            mousey: data["mousey"],
+            fireworkNum: fireworkNum
+        });
     });
 });

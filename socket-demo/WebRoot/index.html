@@ -35,12 +35,16 @@ canvas {
 </style>
 </head>
 <body>
-<div id="meet"></div>
-<div id="cut-down"></div>
-<div id="num-wrap">Now&nbsp<span id="num">0</span>&nbsp;Client&nbsp;Connected</div>
+	<div id="meet"></div>
+	<div id="cut-down"></div>
+	<div id="num-wrap">
+		Now&nbsp
+		<span id="num">0</span>
+		&nbsp;Client&nbsp;Connected
+	</div>
 	<canvas id="canvas">Canvas is not supported in your browser.</canvas>
-<script src="/socket.io/socket.io.js"></script>
-<script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
 var num = document.getElementById("num");
 var socket = io.connect('http://localhost');
 socket.on("connect",  function() {
@@ -313,8 +317,5 @@ function createFirework(mx,my){
 
 // once the window loads, we are ready for some fireworks!
 window.onload = loop;
-</script>
-
-
-</body>
+</script></body>
 </html>

@@ -1,0 +1,40 @@
+body{
+	background: #000;
+}
+header{
+	position: fixed;
+	top: 0;
+	width: 100%;
+	background-color: rgba(130,24,255,0.6);
+}
+footer{
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+}
+#btn-left{
+	float: left;
+	width: 20%;
+	max-width: 100px;
+	background-color: rgba(130,24,255,0.6);
+}
+#btn-right{
+	float: right;
+	width: 20%;
+	max-width: 100px;
+	background-color: rgba(130,24,255,0.6);
+}
+canvas {
+	cursor: crosshair;
+	display: block;
+}
+.alert_box{width:300px;color:#fff;color:#444;background:#fff;box-shadow:1px 2px 2px #555;display:none;}
+.alert_box h4{height:26px;line-height:26px;overflow:hidden;background:rgba(130,24,255,0.6);color:#fff;padding:0 10px;font-size:14px;}
+.alert_box h4 a{width:14px;line-height:13px;_line-height:15px;height:13px;font-family:arial;overflow:hidden;display:block;background:#fff;color:rgba(130,24,255,0.6);float:right;text-align:center;text-decoration:none;margin-top:7px;font-size:14px;font-weight:normal;border-radius:2px;_font-size:12px;}
+.alert_box p{padding:30px 10px;font-size:13px;border:1px solid #ccc;}
+
+
+.confirm_box{width:300px;color:#fff;color:#444;background:#fff;box-shadow:1px 2px 2px #555;display:none;}
+.confirm_box h4{height:26px;line-height:26px;overflow:hidden;background:rgba(130,24,255,0.6);color:#fff;padding:0 10px;font-size:14px;}
+.confirm_box h4 a{width:14px;line-height:13px;_line-height:15px;height:13px;font-family:arial;overflow:hidden;display:block;background:#fff;color:rgba(130,24,255,0.6);float:right;text-align:center;text-decoration:none;margin-top:7px;font-size:14px;font-weight:normal;border-radius:2px;_font-size:12px;}
+.confirm_box p{padding:30px 10px;font-size:13px;border:1px solid #ccc;}

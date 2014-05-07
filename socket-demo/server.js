@@ -112,7 +112,6 @@ io.sockets.on('connection', function(socket) {
         socket.broadcast.emit("clientChange", clientNum);
     });
     socket.on("myClick", function(data) {
-        /* Act on the event */
         fireworkNum++;
         console.log(data + "fireworkNum" + fireworkNum);
         socket.broadcast.emit("otherClick", data);

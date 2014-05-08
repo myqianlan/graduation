@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>draw-path</title>
+	<!-- Sets initial viewport load and disables zooming  -->
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="stylesheet" href="stylesheets/reset.css">
+	<style>
+	#down{
+		/*background-color: #f00;*/
+		width: 500px;
+		height: 400px;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	#up{
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #000;
+	}
+	</style>
+<body>
+	<!-- <canvas id="down"></canvas> -->
+	<canvas id="up" width="400" height="500"></canvas>
+	<script src="javascripts/jquery-2.1.1.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		var $up=$("#up"),
+		        uctx = $up[0].getContext('2d');
+		var posList = [];
+
+   $up[0].addEventListener('click', function(e) {
+        e.preventDefault();
+        x = e.pageX - $up[0].offsetLeft;
+        y = e.pageY - $up[0].offsetTop;
+        drawCircle (x, y, uctx);
+        posList.push({x:x,y:y});
+        console.log(posList.length);
+
+    });
+		
+	});
+ 
+	function random(min, max) {
+        		return Math.random() * (max - min) + min;
+    	}
+	function drawCircle (x, y, ctx) {
+		var brightness = random(50, 70);
+		var hue = random(0,255);
+		ctx.strokeStyle = 'hsl(' + hue + ', 100%, ' + brightness + '%)';
+		ctx.lineWidth = 2;
+		ctx.beginPath();
+		ctx.arc(x, y, 7, 0, Math.PI *2);
+		ctx.stroke();
+		}
+	</script>
+	
+</body>
+
+</html>

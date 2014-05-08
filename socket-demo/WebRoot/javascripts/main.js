@@ -15,13 +15,13 @@ $(document).ready(function() {
 
     socket.on("clientChange", function(data) {
         console.log("current connect " + data + " client");
-        clientInfo.html(data["clientNum"]);
-        fireworkInfo.html(data["fireworkNum"]);
+        $clientInfo.html(data["clientNum"]);
+        $fireworkInfo.html(data["fireworkNum"]);
     });
     socket.on('otherClick', function(data) {
         mx = cw * data["mousex"];
         my = ch * data["mousey"];
-        fireworkInfo.html(data["fireworkNum"]);
+        $fireworkInfo.html(data["fireworkNum"]);
         createFirework(mx, my);
         console.log(data);
     });
@@ -266,10 +266,12 @@ $(document).ready(function() {
         };
 
         //todo:
-        socket.emit("myClick", {
-            mousex: Math.floor(100 * mx / cw) / 100,
-            mousey: Math.floor(100 * my / ch) / 100
-        });
+        if (!modeToggle) {
+            socket.emit("myClick", {
+                mousex: Math.floor(100 * mx / cw) / 100,
+                mousey: Math.floor(100 * my / ch) / 100
+            });
+        };
     });
 
     function createFirework(mx, my) {
@@ -281,23 +283,23 @@ $(document).ready(function() {
     /////////////////////////
     ///////////////////
     /////////////////
-    var btnLeft = $("#btn-left"),
-        btnRight = $("#btn-right"),
-        clientInfo = $("#client-info"),
-        fireworkInfo = $("#firework-info"),
+    var $btnLeft = $("#btn-left"),
+        $btnRight = $("#btn-right"),
+        $clientInfo = $("#client-info"),
+        $fireworkInfo = $("#firework-info"),
         modeConnect = false,
         modeToggle = false;
 
-    btnLeft.on("click", function(event) {
+    $btnLeft.on("click", function(event) {
         event.preventDefault();
         /* Act on the event */
-        if (btnLeft.val() == "Gift") {
-            btnLeft.val("Send");
-            btnRight.val("Repeal");
+        if ($btnLeft.val() == "Gift") {
+            $btnLeft.val("Send");
+            $btnRight.val("Repeal");
             modeToggle = true;
         } else {
-            // btnLeft.val("Gift");
-            // btnRight.val("Help");
+            // $btnLeft.val("Gift");
+            // $btnRight.val("Help");
             // modeToggle = false;
             easyDialog.open({
                 container: 'Send'
@@ -313,8 +315,8 @@ $(document).ready(function() {
         if ($(this).val() == "ok") {
             console.log("ok");
             modeToggle = false;
-            btnLeft.val("Gift");
-            btnRight.val("Help");
+            $btnLeft.val("Gift");
+            $btnRight.val("Help");
             if (modeConnect) {
                 //emit a event
             } else {
@@ -327,10 +329,10 @@ $(document).ready(function() {
             console.log("cancle");
         };
     });
-    btnRight.on("click", function(event) {
+    $btnRight.on("click", function(event) {
         event.preventDefault();
         /* Act on the event */
-        if (btnRight.val() == "Help") {
+        if ($btnRight.val() == "Help") {
             easyDialog.open({
                 container: 'Help'
             });

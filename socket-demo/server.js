@@ -58,7 +58,7 @@ var webServicer = function(req, res) {
     //使用路径解析模块,组装实际文件路径 
     var filePath = path.join("./WebRoot", pathName);
     //判断文件是否存在 
-    path.exists(filePath, function(exists) {
+    fs.exists(filePath, function(exists) {
         if (exists) { //文件存在 
             //在返回头中写入内容类型 
             res.writeHead(200, {

@@ -25,6 +25,11 @@ $(document).ready(function() {
         createFirework(mx, my);
         console.log(data);
     });
+    socket.on('otherDrawClick', function(data) {
+        $fireworkInfo.html(data["fireworkNum"]);
+        createDrawFirework(data["posArr"])
+        console.log(data);
+    });
 
     // when animating on canvas, it is best to use requestAnimationFrame instead of setTimeout or setInterval
     // not supported in all browsers though and sometimes needs a prefix, so we need a shim
@@ -278,6 +283,43 @@ $(document).ready(function() {
         fireworks.push(new Firework(cw / 2, ch, mx, my));
     }
 
+    function createDrawFirework(posArr) {
+        for (var i = posArr.length - 1; i >= 0; i--) {
+            var x = cw * posArr[i]["mousex"];
+            var y = ch * posArr[i]["mousey"]
+            fireworks.push(new Firework(cw / 2, ch, x, y));
+        };
+
+    }
+    var posList = [];
+    var $drawMode = $("#draw-mode"),
+        drawModeCtx = $drawMode[0].getContext('2d');
+    $drawMode[0].width = window.innerWidth;
+    $drawMode[0].height = window.innerHeight;
+
+    $drawMode.on('click', function(event) {
+        event.preventDefault();
+        /* Act on the event */
+        var x = event.pageX - $drawMode[0].offsetLeft;
+        var y = event.pageY - $drawMode[0].offsetTop;
+        posList.push({
+            mousex: Math.floor(100 * x / cw) / 100,
+            mousey: Math.floor(100 * y / ch) / 100
+        });
+        console.log(posList);
+        drawCircle(x, y, drawModeCtx);
+    });
+
+
+    function drawCircle(x, y, ctx) {
+        var brightness = random(50, 70);
+        var hue = random(0, 255);
+        ctx.strokeStyle = 'hsl(' + hue + ', 100%, ' + brightness + '%)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x, y, 7, 0, Math.PI * 2);
+        ctx.stroke();
+    }
     // once the window loads, we are ready for some fireworks!
     window.onload = loop;
     /////////////////////////
@@ -297,6 +339,9 @@ $(document).ready(function() {
             $btnLeft.val("Send");
             $btnRight.val("Repeal");
             modeToggle = true;
+            posList.length = 0;
+            drawModeCtx.clearRect(0, 0, cw, ch);
+            $drawMode.show();
         } else {
             // $btnLeft.val("Gift");
             // $btnRight.val("Help");
@@ -315,14 +360,19 @@ $(document).ready(function() {
         if ($(this).val() == "ok") {
             console.log("ok");
             modeToggle = false;
+            $drawMode.hide();
             $btnLeft.val("Gift");
             $btnRight.val("Help");
+
             if (modeConnect) {
                 //emit a event
+                socket.emit("myDrawClick", posList);
+                createDrawFirework(posArr);
             } else {
                 easyDialog.open({
                     container: 'Error',
-                    callback: createFirework(20, 50)
+                    callback: createDrawFirework(posList)
+                    //TODO
                 });
             };
         } else {
@@ -349,6 +399,8 @@ $(document).ready(function() {
         easyDialog.close();
         // alert($(this).val());
         if ($(this).val() == "ok") {
+            posList.length = 0;
+            drawModeCtx.clearRect(0, 0, cw, ch);
             console.log("ok+RepealSuccess");
             easyDialog.open({
                 container: 'RepealSuccess'
@@ -370,6 +422,6 @@ $(document).ready(function() {
     });
 
     function login(argument) {
-        $("header,footer,canvas").show();
+        $("header,footer,#canvas").show();
     }
 });

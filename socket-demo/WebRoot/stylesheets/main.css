@@ -32,9 +32,20 @@ input[type=button]{
 	padding: 0;
 	border-radius: 5px;
 }
-canvas {
+#canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
 	cursor: crosshair;
 	display: block;
+}
+#draw-mode{
+	position: absolute;
+	top: 0;
+	left: 0;
+	cursor: crosshair;
+	display: none;
+	background-color: rgba(130,24,255,0.3);
 }
 .alert_box{width:300px;color:#fff;color:#444;background:#fff;box-shadow:1px 2px 2px #555;display:none;}
 .alert_box h4{height:26px;line-height:26px;overflow:hidden;background:rgba(130,24,255,0.6);color:#fff;padding:0 10px;font-size:14px;}

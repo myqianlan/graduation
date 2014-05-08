@@ -124,4 +124,12 @@ io.sockets.on('connection', function(socket) {
             fireworkNum: fireworkNum
         });
     });
+    socket.on("myDrawClick", function(data) {
+        fireworkNum += data.length;
+        console.log(data + "fireworkNum" + fireworkNum);
+        io.sockets.emit("otherDrawClick", {
+            posArr: data,
+            fireworkNum: fireworkNum
+        });
+    });
 });

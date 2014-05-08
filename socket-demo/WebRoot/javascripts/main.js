@@ -261,7 +261,7 @@ $(document).ready(function() {
         e.preventDefault();
         mx = e.pageX - canvas.offsetLeft;
         my = e.pageY - canvas.offsetTop;
-        if (!modeConnect) {
+        if (!modeConnect && !modeToggle) {
             createFirework(mx, my);
         };
 
@@ -296,12 +296,37 @@ $(document).ready(function() {
             btnRight.val("Repeal");
             modeToggle = true;
         } else {
-            btnLeft.val("Gift");
-            btnRight.val("Help");
-            modeToggle = false;
+            // btnLeft.val("Gift");
+            // btnRight.val("Help");
+            // modeToggle = false;
+            easyDialog.open({
+                container: 'Send'
+            });
         }
     });
-
+    //Send confirm
+    $("#Send").find('input').on('click', function(event) {
+        event.preventDefault();
+        /* Act on the event */
+        easyDialog.close();
+        // alert($(this).val());
+        if ($(this).val() == "ok") {
+            console.log("ok");
+            modeToggle = false;
+            btnLeft.val("Gift");
+            btnRight.val("Help");
+            if (modeConnect) {
+                //emit a event
+            } else {
+                easyDialog.open({
+                    container: 'Error',
+                    callback: createFirework(20, 50)
+                });
+            };
+        } else {
+            console.log("cancle");
+        };
+    });
     btnRight.on("click", function(event) {
         event.preventDefault();
         /* Act on the event */
@@ -310,7 +335,24 @@ $(document).ready(function() {
                 container: 'Help'
             });
         } else {
-            alert("sure repeal ?")
+            easyDialog.open({
+                container: 'Repeal'
+            });
+        };
+    });
+    //Repeal confirm
+    $("#Repeal").find('input').on('click', function(event) {
+        event.preventDefault();
+        /* Act on the event */
+        easyDialog.close();
+        // alert($(this).val());
+        if ($(this).val() == "ok") {
+            console.log("ok+RepealSuccess");
+            easyDialog.open({
+                container: 'RepealSuccess'
+            });
+        } else {
+            console.log("cancle");
         };
     });
     $(".alert_box").find("a").on('click', function(event) {

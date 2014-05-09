@@ -19,3 +19,5 @@
 10.git github
 
 11.如今的交互方式，将是实时的交互，摒弃等待
+
+12.基于MVC的 JavaScript Web 富应用开发 第八章-实时Web

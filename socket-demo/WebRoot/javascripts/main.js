@@ -11,6 +11,8 @@ $(document).ready(function() {
         /* action when conneted */
         modeConnect = false;
         console.log("you disconnect to others!")
+        //TODO
+        //alert a dialog
     });
 
     socket.on("clientChange", function(data) {

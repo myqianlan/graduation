@@ -1,5 +1,6 @@
 $(document).ready(function() {
     //the website you will connect
+    var socket = io.connect();
     var socket = io.connect("http://localhost");
 
     socket.on("connect", function() {
@@ -60,8 +61,8 @@ $(document).ready(function() {
         particles = [],
         //firworks"s position collection
         posList = [],
-        // starting hue
-        hue = 120,
+        // set for  hue
+        hue,
         // mouse x coordinate,
         mx,
         // mouse y coordinate
@@ -162,6 +163,7 @@ $(document).ready(function() {
 
     // draw firework
     Firework.prototype.draw = function() {
+        hue = random(0, 255);
         mainCanvasCtx.beginPath();
         // move to the last tracked coordinate in the set, then draw a line to the current x and y
         mainCanvasCtx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
@@ -233,7 +235,7 @@ $(document).ready(function() {
     // create particle group/explosion
     function createParticles(x, y) {
         // increase the particle count for a bigger explosion, beware of the canvas performance hit with the increased particles though
-        var particleCount = 30;
+        var particleCount = Math.floor(random(30, 45));
         while (particleCount--) {
             particles.push(new Particle(x, y));
         }
@@ -243,9 +245,6 @@ $(document).ready(function() {
     function loop() {
         // this function will run endlessly with requestAnimationFrame
         requestAnimFrame(loop);
-
-        // increase the hue to get different colored fireworks over time
-        hue += 5.5;
 
         // setting the composite operation to destination-out will allow us to clear the canvas at a specific opacity, rather than wiping it entirely
         mainCanvasCtx.globalCompositeOperation = "destination-out";
@@ -317,7 +316,7 @@ $(document).ready(function() {
     //when draw mode is on ,draw a circle
     function drawCircle(x, y, ctx) {
         var brightness = random(50, 70);
-        var hue = random(0, 255);
+        hue = random(0, 255);
         ctx.strokeStyle = "hsl(" + hue + ", 100%, " + brightness + "%)";
         ctx.lineWidth = 2;
         ctx.beginPath();

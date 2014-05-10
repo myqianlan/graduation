@@ -2,10 +2,10 @@
 // Web服务器 
 //------------------------------------------------ 
 //开始服务启动计时器 
-console.time('[WebSvr][Start]');
+console.time("[WebSvr][Start]");
 //请求模块 
-var http = require('http'); //HTTP协议模块 
-var url = require('url'); //URL解析模块 
+var http = require("http"); //HTTP协议模块 
+var url = require("url"); //URL解析模块 
 var fs = require("fs"); //文件系统模块 
 var path = require("path"); //路径解析模块 
 //依据路径获取返回内容类型字符串,用于http返回头 
@@ -87,7 +87,7 @@ var webServicer = function(req, res) {
 }
 //创建一个http服务器 
 var webSvr = http.createServer(webServicer),
-    io = require('socket.io').listen(webSvr);
+    io = require("socket.io").listen(webSvr);
 //指定服务器错误事件响应 
 webSvr.on("error", function(error) {
     console.log(error); //在控制台中输出错误信息 
@@ -95,23 +95,22 @@ webSvr.on("error", function(error) {
 //开始侦听3000端口 
 webSvr.listen(3000, function() {
     //向控制台输出服务启动的信息 
-    console.log('WebSur Start running at http://127.0.0.1:3000/');
+    console.log("WebSur Start running at localhost:3000");
     //结束服务启动计时器并输出 
-    console.timeEnd('[WebSvr][Start]');
+    console.timeEnd("[WebSvr][Start]");
 });
 
 var clientNum = 0;
 var fireworkNum = 0;
-io.sockets.on('connection', function(socket) {
+io.sockets.on("connection", function(socket) {
     clientNum++;
-    console.log(clientNum);
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    console.log("curent cient is : " + clientNum);
     io.sockets.emit("clientChange", {
         clientNum: clientNum,
         fireworkNum: fireworkNum
     });
     //user leave
-    socket.on('disconnect', function() {
+    socket.on("disconnect", function() {
         clientNum--;
         console.log("one leave");
         socket.broadcast.emit("clientChange", {

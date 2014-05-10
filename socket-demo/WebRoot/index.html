@@ -2,10 +2,8 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>real page</title>
-	<!-- Sets initial viewport load and disables zooming  -->
+	<title>一起创造烟花吧</title>
 	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-	<!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<link rel="stylesheet" href="stylesheets/reset.css">
@@ -13,63 +11,68 @@
 <body>
 	<header>
 		<div >
-			Cient:
-			<span id="client-info"></span>
+			当前共有
+			<span id="client-info">0</span>
+			人在一起创造烟花
 		</div>
 		<div >
-			Firework:
-			<span id="firework-info"></span>
+			累计创造的烟花数量为
+			<span id="firework-info">0</span>
+			发
 		</div>
 	</header>
-	<canvas id="canvas">Canvas is not supported in your browser.</canvas>
+	<canvas id="main-canvas">Canvas is not supported in your browser.</canvas>
 	<canvas id="draw-mode">Canvas is not supported in your browser.</canvas>
 	<footer class="clearfix">
-		<input type="button" value="Gift" id="btn-left">
-		<input type="button" value="Help" id="btn-right"></footer>
+		<input type="button" value="模式" id="btn-left" name="Mode">
+		<input type="button" value="帮助" id="btn-right" name="Help"></footer>
+
+	<!-- alert box and confirm box  -->
 	<div class="alert_box" id="Help">
 		<h4>
 			<a href="javascript:void(0)" title="关闭窗口">&times;</a>
-			Help
+			帮助
 		</h4>
-		<p>How to do with this web?</p>
-		<p>First: adsaHow to do with this web?o with this web?o with this web?o with this web?o with this web?o with this web?o with this web?o with this web?o with this web?o with this web?o with this web?o with this web?o with this web?o with this web?o with this web?</p>
+		<dl>
+			<dt>普通模式</dt>
+			<dd>默认情况即为普通模式，您当前的每一次点击都将创造一个烟花与其他人实时共享。</dd>
+			<dt>增强模式</dt>
+			<dd>点击左下角模式按钮，即可开启增强模式。开启过后，您可以任意创造多个烟花，然后点击发送按钮，才将您所绘制的与他人共享。</dd>
+			<dt>关于作者</dt>
+			<dd>你可以叫我myqianlan，或者Moyi.</dd>
+			<dd>E-mail:linquantan@gamil.com</dd>
+		</dl>
 	</div>
 	<div class="alert_box" id="RepealSuccess">
 		<h4>
 			<a href="javascript:void(0)" title="关闭窗口">&times;</a>
-			Tips
+			提示
 		</h4>
-		<p>Repeal Sucess</p>
+		<p>撤销成功</p>
 	</div>
 	<div class="alert_box" id="Error">
 		<h4>
 			<a href="javascript:void(0)" title="关闭窗口">&times;</a>
-			Tips
+			错误
 		</h4>
-		<p>Something Error,send faild</p>
+		<p>您当前可能无法连接到服务器，但您仍旧可以一个人创造烟花。</p>
 	</div>
 	<div class="alert_box" id="Home">
-		<h4>
-			Wellcome To This Web
-		</h4>
-		<p>Click to login ! And do it !</p>
-		<a href="javascript:void(0)" title="checkin">Login</a>
+		<h4>欢迎来到这里</h4>
+		<p>让我们和全世界一起创造烟花吧！</p>
+		<a href="javascript:void(0)">点击进入</a>
 	</div>
 
 	<div class="confirm_box" id="Repeal">
-		<h4>
-			Repeal
-		</h4>
-		<p>Click to login ! And do it !</p>
-		<input type="button" value="ok"><input type="button" value="cancle">
-	</div>
+		<h4>撤销</h4>
+		<p>您是否确定要撤销本次绘制操作？</p>
+		<input type="button" value="确认" name="ok">
+		<input type="button" value="取消" name="cancle"></div>
 	<div class="confirm_box" id="Send">
-		<h4>
-			Send
-		</h4>
-		<p>you will send this to others  ?</p>
-		<input type="button" value="ok"><input type="button" value="cancle">
-	</div>
+		<h4>发送</h4>
+		<p>您是否确定要现在将精彩送给他人？</p>
+		<input type="button" value="确认" name="ok">
+		<input type="button" value="取消" name="cancle"></div>
 	<script src="javascripts/jquery-2.1.1.min.js"></script>
 	<script src="javascripts/easydialog.min.js"></script>
 	<script src="javascripts/main.js"></script>

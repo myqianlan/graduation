@@ -1,52 +1,56 @@
 $(document).ready(function() {
-
-    var socket = io.connect('http://localhost');
+    //the website you will connect
+    var socket = io.connect("http://localhost");
 
     socket.on("connect", function() {
         /* action when conneted */
         modeConnect = true;
-        console.log("you connect to others!")
     });
+
     socket.on("disconnect", function() {
         /* action when conneted */
         modeConnect = false;
-        console.log("you disconnect to others!")
-        //TODO
-        //alert a dialog
+        easyDialog.open({
+            container: "Error"
+        });
     });
 
+    //client change eventlistener
     socket.on("clientChange", function(data) {
-        console.log("current connect " + data + " client");
         $clientInfo.html(data["clientNum"]);
         $fireworkInfo.html(data["fireworkNum"]);
     });
-    socket.on('otherClick', function(data) {
+
+    //other click eventlistener
+    socket.on("otherClick", function(data) {
         mx = cw * data["mousex"];
         my = ch * data["mousey"];
         $fireworkInfo.html(data["fireworkNum"]);
         createFirework(mx, my);
-        console.log(data);
     });
-    socket.on('otherDrawClick', function(data) {
+
+    //other draw event listener
+    socket.on("otherDrawClick", function(data) {
         $fireworkInfo.html(data["fireworkNum"]);
         createDrawFirework(data["posArr"])
-        console.log(data);
     });
 
     // when animating on canvas, it is best to use requestAnimationFrame instead of setTimeout or setInterval
-    // not supported in all browsers though and sometimes needs a prefix, so we need a shim
+    // not supported in all browsers though and sometimes needs a prefix, so  need a shim
     window.requestAnimFrame = (function() {
         return window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||
             function(callback) {
-                window.setTimeout(callback, 1000 / 60);
+                window.setTimeout(callback, 1000 / 30);
         };
     })();
 
-    // now we will setup our basic variables for the demo
-    var canvas = document.getElementById('canvas'),
-        ctx = canvas.getContext('2d'),
+    //  setup  basic variables
+    var $mainCanvas = $("#main-canvas"),
+        mainCanvasCtx = $mainCanvas[0].getContext("2d"),
+        $drawMode = $("#draw-mode"),
+        drawModeCtx = $drawMode[0].getContext("2d"),
         // full screen dimensions
         cw = window.innerWidth,
         ch = window.innerHeight,
@@ -54,25 +58,31 @@ $(document).ready(function() {
         fireworks = [],
         // particle collection
         particles = [],
+        //firworks"s position collection
+        posList = [],
         // starting hue
         hue = 120,
-        // when launching fireworks with a click, too many get launched at once without a limiter, one launch per 5 loop ticks
-        limiterTotal = 10,
-        limiterTick = 0,
-        // this will time the auto launches of fireworks, one launch per 80 loop ticks
-        timerTotal = 80,
-        timerTick = 0,
-        // mousedown = false,
         // mouse x coordinate,
         mx,
         // mouse y coordinate
-        my;
+        my,
 
+        $btnLeft = $("#btn-left"),
+        $btnRight = $("#btn-right"),
+        //info dom
+        $clientInfo = $("#client-info"),
+        $fireworkInfo = $("#firework-info"),
+        //connect if or not
+        modeConnect = false,
+        //mode if or not
+        modeToggle = false;
+
+    // set draw mode canvas dimensions
+    $drawMode[0].width = cw;
+    $drawMode[0].height = ch;
     // set canvas dimensions
-    canvas.width = cw;
-    canvas.height = ch;
-
-    // now we are going to setup our function placeholders for the entire demo
+    $mainCanvas[0].width = cw;
+    $mainCanvas[0].height = ch;
 
     // get a random number within a range
     function random(min, max) {
@@ -152,17 +162,17 @@ $(document).ready(function() {
 
     // draw firework
     Firework.prototype.draw = function() {
-        ctx.beginPath();
+        mainCanvasCtx.beginPath();
         // move to the last tracked coordinate in the set, then draw a line to the current x and y
-        ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
-        ctx.lineTo(this.x, this.y);
-        ctx.strokeStyle = 'hsl(' + hue + ', 100%, ' + this.brightness + '%)';
-        ctx.stroke();
+        mainCanvasCtx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+        mainCanvasCtx.lineTo(this.x, this.y);
+        mainCanvasCtx.strokeStyle = "hsl(" + hue + ", 100%, " + this.brightness + "%)";
+        mainCanvasCtx.stroke();
 
-        ctx.beginPath();
+        mainCanvasCtx.beginPath();
         // draw the target for this firework with a pulsing circle
-        ctx.arc(this.tx, this.ty, this.targetRadius, 0, Math.PI * 2);
-        ctx.stroke();
+        mainCanvasCtx.arc(this.tx, this.ty, this.targetRadius, 0, Math.PI * 2);
+        mainCanvasCtx.stroke();
     }
 
     // create particle
@@ -212,12 +222,12 @@ $(document).ready(function() {
 
     // draw particle
     Particle.prototype.draw = function() {
-        ctx.beginPath();
+        mainCanvasCtx.beginPath();
         // move to the last tracked coordinates in the set, then draw a line to the current x and y
-        ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
-        ctx.lineTo(this.x, this.y);
-        ctx.strokeStyle = 'hsla(' + this.hue + ', 100%, ' + this.brightness + '%, ' + this.alpha + ')';
-        ctx.stroke();
+        mainCanvasCtx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+        mainCanvasCtx.lineTo(this.x, this.y);
+        mainCanvasCtx.strokeStyle = "hsla(" + this.hue + ", 100%, " + this.brightness + "%, " + this.alpha + ")";
+        mainCanvasCtx.stroke();
     }
 
     // create particle group/explosion
@@ -229,7 +239,7 @@ $(document).ready(function() {
         }
     }
 
-    // main demo loop
+    // main  loop
     function loop() {
         // this function will run endlessly with requestAnimationFrame
         requestAnimFrame(loop);
@@ -237,16 +247,14 @@ $(document).ready(function() {
         // increase the hue to get different colored fireworks over time
         hue += 5.5;
 
-        // normally, clearRect() would be used to clear the canvas
-        // we want to create a trailing effect though
         // setting the composite operation to destination-out will allow us to clear the canvas at a specific opacity, rather than wiping it entirely
-        ctx.globalCompositeOperation = 'destination-out';
+        mainCanvasCtx.globalCompositeOperation = "destination-out";
         // decrease the alpha property to create more prominent trails
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(0, 0, cw, ch);
+        mainCanvasCtx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        mainCanvasCtx.fillRect(0, 0, cw, ch);
         // change the composite operation back to our main mode
         // lighter creates bright highlight points as the fireworks and particles overlap each other
-        ctx.globalCompositeOperation = 'lighter';
+        mainCanvasCtx.globalCompositeOperation = "lighter";
 
         // loop over each firework, draw it, update it
         var i = fireworks.length;
@@ -263,28 +271,13 @@ $(document).ready(function() {
         }
 
     }
-    // mouse event bindings
-    canvas.addEventListener('click', function(e) {
-        e.preventDefault();
-        mx = e.pageX - canvas.offsetLeft;
-        my = e.pageY - canvas.offsetTop;
-        if (!modeConnect && !modeToggle) {
-            createFirework(mx, my);
-        };
 
-        //todo:
-        if (!modeToggle) {
-            socket.emit("myClick", {
-                mousex: Math.floor(100 * mx / cw) / 100,
-                mousey: Math.floor(100 * my / ch) / 100
-            });
-        };
-    });
 
     function createFirework(mx, my) {
         fireworks.push(new Firework(cw / 2, ch, mx, my));
     }
 
+    //draw mode 
     function createDrawFirework(posArr) {
         for (var i = posArr.length - 1; i >= 0; i--) {
             var x = cw * posArr[i]["mousex"];
@@ -293,137 +286,146 @@ $(document).ready(function() {
         };
 
     }
-    var posList = [];
-    var $drawMode = $("#draw-mode"),
-        drawModeCtx = $drawMode[0].getContext('2d');
-    $drawMode[0].width = window.innerWidth;
-    $drawMode[0].height = window.innerHeight;
 
-    $drawMode.on('click', function(event) {
+    // mouse event bindings
+    $mainCanvas.on("click", function(event) {
         event.preventDefault();
-        /* Act on the event */
-        var x = event.pageX - $drawMode[0].offsetLeft;
-        var y = event.pageY - $drawMode[0].offsetTop;
+        mx = event.pageX - $mainCanvas[0].offsetLeft;
+        my = event.pageY - $mainCanvas[0].offsetTop;
+        if (!modeConnect && !modeToggle) {
+            createFirework(mx, my);
+        };
+        //if mode is false ,emit target click event
+        if (!modeToggle) {
+            socket.emit("myClick", {
+                mousex: Math.floor(100 * mx / cw) / 100,
+                mousey: Math.floor(100 * my / ch) / 100
+            });
+        };
+    });
+
+    $drawMode.on("click", function(event) {
+        event.preventDefault();
+        var x = event.clientX - $drawMode[0].offsetLeft;
+        var y = event.clientY - $drawMode[0].offsetTop;
         posList.push({
             mousex: Math.floor(100 * x / cw) / 100,
             mousey: Math.floor(100 * y / ch) / 100
         });
-        console.log(posList);
         drawCircle(x, y, drawModeCtx);
     });
-
-
+    //when draw mode is on ,draw a circle
     function drawCircle(x, y, ctx) {
         var brightness = random(50, 70);
         var hue = random(0, 255);
-        ctx.strokeStyle = 'hsl(' + hue + ', 100%, ' + brightness + '%)';
+        ctx.strokeStyle = "hsl(" + hue + ", 100%, " + brightness + "%)";
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(x, y, 7, 0, Math.PI * 2);
         ctx.stroke();
     }
-    // once the window loads, we are ready for some fireworks!
-    window.onload = loop;
-    /////////////////////////
-    ///////////////////
-    /////////////////
-    var $btnLeft = $("#btn-left"),
-        $btnRight = $("#btn-right"),
-        $clientInfo = $("#client-info"),
-        $fireworkInfo = $("#firework-info"),
-        modeConnect = false,
-        modeToggle = false;
 
-    $btnLeft.on("click", function(event) {
+    // the window load and resize
+    window.onload = loop;
+    window.onresize = function() {
+        cw = window.innerWidth;
+        ch = window.innerHeight;
+        $drawMode[0].width = cw;
+        $drawMode[0].height = ch;
+        $mainCanvas[0].width = cw;
+        $mainCanvas[0].height = ch;
+    }
+
+    //UI bind events
+    $btnLeft.on("click touchend", function(event) {
         event.preventDefault();
         /* Act on the event */
-        if ($btnLeft.val() == "Gift") {
-            $btnLeft.val("Send");
-            $btnRight.val("Repeal");
+        if ($btnLeft.attr("name") == "Mode") {
+            $btnLeft.attr("name", "Send");
+            $btnRight.attr("name", "Repeal");
+            $btnLeft.val("发送");
+            $btnRight.val("撤销");
             modeToggle = true;
             posList.length = 0;
             drawModeCtx.clearRect(0, 0, cw, ch);
-            $drawMode.show();
+            $drawMode.fadeIn();
         } else {
-            // $btnLeft.val("Gift");
-            // $btnRight.val("Help");
-            // modeToggle = false;
             easyDialog.open({
-                container: 'Send'
+                container: "Send"
             });
         }
     });
+
     //Send confirm
-    $("#Send").find('input').on('click', function(event) {
+    $("#Send").find("input").on("click touchend", function(event) {
         event.preventDefault();
         /* Act on the event */
         easyDialog.close();
         // alert($(this).val());
-        if ($(this).val() == "ok") {
-            console.log("ok");
+        if ($(this).attr("name") == "ok") {
             modeToggle = false;
             $drawMode.hide();
-            $btnLeft.val("Gift");
-            $btnRight.val("Help");
+            $btnLeft.attr("name", "Mode");
+            $btnRight.attr("name", "Help");
+            $btnLeft.val("模式");
+            $btnRight.val("帮助");
 
             if (modeConnect) {
                 //emit a event
                 socket.emit("myDrawClick", posList);
-                createDrawFirework(posArr);
+                createDrawFirework(posList);
             } else {
                 easyDialog.open({
-                    container: 'Error',
-                    callback: createDrawFirework(posList)
-                    //TODO
+                    container: "Error",
+                    callback: sendErrorDo
                 });
             };
-        } else {
-            console.log("cancle");
-        };
+        } else {};
     });
-    $btnRight.on("click", function(event) {
+
+    $btnRight.on("click touchend", function(event) {
         event.preventDefault();
         /* Act on the event */
-        if ($btnRight.val() == "Help") {
+        if ($btnRight.attr("name") == "Help") {
             easyDialog.open({
-                container: 'Help'
+                container: "Help"
             });
         } else {
             easyDialog.open({
-                container: 'Repeal'
+                container: "Repeal"
             });
         };
     });
+
     //Repeal confirm
-    $("#Repeal").find('input').on('click', function(event) {
+    $("#Repeal").find("input").on("click touchend", function(event) {
         event.preventDefault();
         /* Act on the event */
         easyDialog.close();
-        // alert($(this).val());
-        if ($(this).val() == "ok") {
+
+        if ($(this).attr("name") == "ok") {
             posList.length = 0;
             drawModeCtx.clearRect(0, 0, cw, ch);
-            console.log("ok+RepealSuccess");
             easyDialog.open({
-                container: 'RepealSuccess'
+                container: "RepealSuccess"
             });
-        } else {
-            console.log("cancle");
-        };
+        } else {};
     });
-    $(".alert_box").find("a").on('click', function(event) {
+
+    //alert box close
+    $(".alert_box").find("a").on("click touchend", function(event) {
         event.preventDefault();
         /* Act on the event */
         easyDialog.close();
     });
 
-    $("header,footer,canvas").hide();
+    //into the web ,alert this wellcome box
     easyDialog.open({
-        container: 'Home',
-        callback: login
+        container: "Home"
     });
 
-    function login(argument) {
-        $("header,footer,#canvas").show();
+    //send message error ,or connect error
+    function sendErrorDo() {
+        createDrawFirework(posList);
     }
 });

@@ -1,7 +1,7 @@
 $(document).ready(function() {
     //the website you will connect
-    // var socket = io.connect();
-    var socket = io.connect("http://localhost");
+    var socket = io.connect();
+    // var socket = io.connect("http://localhost");
 
     socket.on("connect", function() {
         /* action when conneted */
@@ -302,11 +302,39 @@ $(document).ready(function() {
             });
         };
     });
+    $mainCanvas.on("touchstart", function(event) {
+        event.preventDefault();
+        var touches = event.originalEvent.targetTouches;
+        mx = touches[0].pageX - $mainCanvas[0].offsetLeft;
+        my = touches[0].pageY - $mainCanvas[0].offsetTop;
+        if (!modeConnect && !modeToggle) {
+            createFirework(mx, my);
+        };
+        //if mode is false ,emit target click event
+        if (!modeToggle) {
+            socket.emit("myClick", {
+                mousex: Math.floor(100 * mx / cw) / 100,
+                mousey: Math.floor(100 * my / ch) / 100
+            });
+        };
+    });
 
     $drawMode.on("click", function(event) {
         event.preventDefault();
-        var x = event.clientX - $drawMode[0].offsetLeft;
-        var y = event.clientY - $drawMode[0].offsetTop;
+        var x = event.pageX - $drawMode[0].offsetLeft;
+        var y = event.pageY - $drawMode[0].offsetTop;
+        posList.push({
+            mousex: Math.floor(100 * x / cw) / 100,
+            mousey: Math.floor(100 * y / ch) / 100
+        });
+        drawCircle(x, y, drawModeCtx);
+    });
+
+    $drawMode.on("touchstart", function(event) {
+        event.preventDefault();
+        var touches = event.originalEvent.targetTouches;
+        var x = touches[0].pageX - $drawMode[0].offsetLeft;
+        var y = touches[0].pageY - $drawMode[0].offsetTop;
         posList.push({
             mousex: Math.floor(100 * x / cw) / 100,
             mousey: Math.floor(100 * y / ch) / 100
@@ -336,7 +364,7 @@ $(document).ready(function() {
     }
 
     //UI bind events
-    $btnLeft.on("click touchend", function(event) {
+    $btnLeft.on("click", function(event) {
         event.preventDefault();
         /* Act on the event */
         if ($btnLeft.attr("name") == "Mode") {
@@ -356,7 +384,7 @@ $(document).ready(function() {
     });
 
     //Send confirm
-    $("#Send").find("input").on("click touchend", function(event) {
+    $("#Send").find("input").on("click", function(event) {
         event.preventDefault();
         /* Act on the event */
         easyDialog.close();
@@ -372,7 +400,6 @@ $(document).ready(function() {
             if (modeConnect) {
                 //emit a event
                 socket.emit("myDrawClick", posList);
-                createDrawFirework(posList);
             } else {
                 easyDialog.open({
                     container: "Error",
@@ -382,7 +409,7 @@ $(document).ready(function() {
         } else {};
     });
 
-    $btnRight.on("click touchend", function(event) {
+    $btnRight.on("click", function(event) {
         event.preventDefault();
         /* Act on the event */
         if ($btnRight.attr("name") == "Help") {
@@ -397,7 +424,7 @@ $(document).ready(function() {
     });
 
     //Repeal confirm
-    $("#Repeal").find("input").on("click touchend", function(event) {
+    $("#Repeal").find("input").on("click", function(event) {
         event.preventDefault();
         /* Act on the event */
         easyDialog.close();
@@ -412,7 +439,7 @@ $(document).ready(function() {
     });
 
     //alert box close
-    $(".alert_box").find("a").on("click touchend", function(event) {
+    $(".alert_box").find("a").on("click", function(event) {
         event.preventDefault();
         /* Act on the event */
         easyDialog.close();

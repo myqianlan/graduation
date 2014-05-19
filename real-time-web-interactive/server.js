@@ -1,8 +1,6 @@
 //------------------------------------------------ 
 // Web服务器 
 //------------------------------------------------ 
-//开始服务启动计时器 
-console.time("[WebSvr][Start]");
 //请求模块 
 var http = require("http"); //HTTP协议模块 
 var url = require("url"); //URL解析模块 
@@ -43,8 +41,6 @@ var getContentType = function(filePath) {
 //Web服务器主函数,解析请求,返回Web内容 
 var webServicer = function(req, res) {
     var reqUrl = req.url; //获取请求的url 
-    //向控制台输出请求的路径 
-    console.log(reqUrl);
     //使用url解析模块获取url中的路径名 
     var pathName = url.parse(reqUrl).pathname;
     if (path.extname(pathName) == "") {
@@ -92,19 +88,16 @@ var webSvr = http.createServer(webServicer),
 webSvr.on("error", function(error) {
     console.log(error); //在控制台中输出错误信息 
 });
-//开始侦听3000端口 
-webSvr.listen(3000, function() {
-    //向控制台输出服务启动的信息 
-    console.log("WebSur Start running at localhost:3000");
-    //结束服务启动计时器并输出 
-    console.timeEnd("[WebSvr][Start]");
+//开始侦听端口 
+var port = Number(process.env.PORT || 5000); //heroku
+webSvr.listen(port, function() {
+    console.log("webSvr start");
 });
 
 var clientNum = 0;
 var fireworkNum = 0;
 io.sockets.on("connection", function(socket) {
     clientNum++;
-    console.log("curent cient is : " + clientNum);
     io.sockets.emit("clientChange", {
         clientNum: clientNum,
         fireworkNum: fireworkNum
@@ -112,7 +105,6 @@ io.sockets.on("connection", function(socket) {
     //user leave
     socket.on("disconnect", function() {
         clientNum--;
-        console.log("one leave");
         socket.broadcast.emit("clientChange", {
             clientNum: clientNum,
             fireworkNum: fireworkNum
@@ -120,7 +112,6 @@ io.sockets.on("connection", function(socket) {
     });
     socket.on("myClick", function(data) {
         fireworkNum++;
-        console.log(data + "fireworkNum" + fireworkNum);
         io.sockets.emit("otherClick", {
             mousex: data["mousex"],
             mousey: data["mousey"],
@@ -129,7 +120,6 @@ io.sockets.on("connection", function(socket) {
     });
     socket.on("myDrawClick", function(data) {
         fireworkNum += data.length;
-        console.log(data + "fireworkNum" + fireworkNum);
         io.sockets.emit("otherDrawClick", {
             posArr: data,
             fireworkNum: fireworkNum

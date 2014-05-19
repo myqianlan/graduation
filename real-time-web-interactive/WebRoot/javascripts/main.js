@@ -1,7 +1,7 @@
 $(document).ready(function() {
     //the website you will connect
-    var socket = io.connect();
-    // var socket = io.connect("http://localhost");
+    //var socket = io.connect();
+     var socket = io.connect("http://localhost");
 
     socket.on("connect", function() {
         /* action when conneted */

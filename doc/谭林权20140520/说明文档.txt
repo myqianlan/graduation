@@ -1,0 +1,8 @@
+1.毕业论文压缩包里边为毕业论文相关的文档；
+2.另外一个压缩包为为应用的源程序代码文件。
+ （1）.源程序托管在github上面，可以通过https://github.com/myqianlan/graduation查看该项目的源码。
+ （2）.应用已经部署在免费服务器上面，可以通过fireworkforyou.herokuapp.com就行查看应用实际操作效果。
+ （3）.本地可以进入WebRoot文件夹下面点击index.html查看效果。
+ （4）.请使用IE9及以上或者其他现代浏览器查看。
+
+2014.05.20
